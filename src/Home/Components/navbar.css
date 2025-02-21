@@ -1,0 +1,10 @@
+.nav-link{
+    font-size: large;
+    color: blue !important;
+}
+@media screen and (min-width:990px) {
+    .navbarList{
+        position:absolute;
+        right:125px;
+    }
+}
