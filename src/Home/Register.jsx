@@ -10,15 +10,14 @@ export default function Register() {
           </div>
           <div className="col-sm-6">
             <form action="/Home/register" method="post">
-              <select className="form-control" id="userType" name="UserType">
+              <select className="form-select" id="userType" name="UserType">
                 <option value="">User Type</option>
                 <option value="Restaurant">Restaurant Owner</option>
                 <option value="User">User</option>
                 <option value="Delivery Agent">Delivery Agent</option>
               </select>
               <br />
-
-              <input className="form-control" id="Email" type="email" name="email" placeholder="example@gmail.com" /> <br />
+              <input className="form-control" id="Email" type="email" name="email" placeholder="example@gmail.com"  /> <br />
               <input className="form-control" type="password" id="password" name="password" placeholder="Enter Password..." /><br />
               <input className="btn btn-block btn-success" type="submit" id="login" value="Sign up" /><br />
               <h6 className="text-dark text-end">

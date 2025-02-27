@@ -1,6 +1,6 @@
 import React from 'react'
-import { CarousalData } from '../Components/CarousalData';
-import './about_us.css';
+import { CarousalData } from './Components/CarousalData';
+import './css/about_us.css';
 const Box = ({ objective, p }) => {
   return (
     <div className="row about">

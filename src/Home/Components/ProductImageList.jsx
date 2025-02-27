@@ -1,5 +1,5 @@
 import React from 'react';
-import { productImageData } from  './productImageData.js';
+import { productImageData } from  '../Models/productImageData.js';
 
 export default function ProductImageList() {
   return (

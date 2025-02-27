@@ -1,5 +1,5 @@
 import React from 'react';
-import './login.css';
+import './css/login.css';
 
 export default function Login() {
     return (
@@ -11,7 +11,7 @@ export default function Login() {
                 </div>
                 <div className="col-sm-6">
                 <form action="/Home/Login" method="post">
-                        <select className="form-control" id="userType" name="UserType">
+                        <select className="form-select" id="userType" name="UserType">
                             <option value="">User Type</option>
                             <option value="Restaurant">Restaurant Owner</option>
                             <option value="User">User</option>

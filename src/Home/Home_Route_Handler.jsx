@@ -2,26 +2,26 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import Layout from './Layout';
-import Index from './Index/Index';
-import About_us from './About_us/About_us';
-import Contact_us from './Contact_us/Contact_us';
-import Login from './Login/Login';
-import Register from './Register/Register';
+import Index from './Index';
+import About_us from './About_us';
+import Login from './Login';
+import Register from './Register';
+import Restaurants from './Components/Restaurants';
 
-const App = () => {
+const Home_Route_Handler = () => {
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Index />} />
           <Route path="about-us" element={<About_us />} />
-          <Route path="contact-us" element={<Contact_us />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
+          <Route path="restaurants/:howmuchtoPrint" element={<Restaurants />} />
         </Route>
       </Routes>
     </>
   )
 }
 
-export default App
+export default Home_Route_Handler;

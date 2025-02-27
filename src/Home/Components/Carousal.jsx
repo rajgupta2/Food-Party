@@ -1,6 +1,6 @@
 import React from 'react';
 import { CarousalData } from './CarousalData';
-import './Carousel.css';
+import '../css/Carousel.css';
 function Carousal({ objective, p }) {
   return (
     <>

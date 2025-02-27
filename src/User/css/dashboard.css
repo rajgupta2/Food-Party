@@ -1,0 +1,9 @@
+.dashboard_item{
+    height: 35vh;
+    text-align: center;
+    padding-top: 15vh;
+    font-size: large;
+}
+.card:hover{
+    transform: scale(1.1);
+}
