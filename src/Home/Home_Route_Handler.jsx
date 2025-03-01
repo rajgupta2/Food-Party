@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Layout from './Layout';
 import Index from './Index';
@@ -12,7 +12,8 @@ const Home_Route_Handler = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path='/' element={<Navigate to="/Home/" replace/>} />
+        <Route path="/Home" element={<Layout />}>
           <Route index element={<Index />} />
           <Route path="about-us" element={<About_us />} />
           <Route path="register" element={<Register />} />
