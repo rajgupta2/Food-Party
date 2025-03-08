@@ -9,7 +9,7 @@ export default function Layout() {
     <>
       <div className="container-fluid">
         <Navbar />
-        <div className="container">
+        <div className="container" style={{minHeight:'65vh'}}>
           <Outlet />
         </div>
         <Footer />

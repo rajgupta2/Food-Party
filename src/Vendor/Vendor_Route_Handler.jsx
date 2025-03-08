@@ -8,6 +8,7 @@ import Restaurant_Management from './Restaurant_Management';
 import Promotion from './Promotion';
 import ActiveOrder from './ActiveOrder';
 import Earnings from './Earnings';
+import ManagePromotions from './ManagePromotions';
 const Vendor_Route_Handler = () => {
   return (
     <Routes>
@@ -18,6 +19,7 @@ const Vendor_Route_Handler = () => {
         <Route path="menu-management" element={<Menu_Management/>} />
         <Route path="restaurant-management" element={<Restaurant_Management/>} />
         <Route path="create-promotion" element={<Promotion/>} />
+        <Route path="manage-promotions" element={<ManagePromotions/>} />
         <Route path='order-history' element={<Order_History/>} />
         <Route path='earnings' element={<Earnings/> } />
       </Route>

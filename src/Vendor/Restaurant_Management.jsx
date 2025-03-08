@@ -7,12 +7,12 @@ export default function Restaurant_Management() {
   const [restaurantData, setrestaurantData] = useState({ Name: '', Description: '', Contact: '', Address: '', OperatingHours: '', Rating: '', CoverImage: '', Email: localStorage.getItem('Email') });
   const [wantToShowForm, setwantToShowForm] = useState(false);
   const [wantToEdit, setwantToEdit] = useState(false);
-  const getRestaurantData = async () => {
-    await fetch(`${Mongo_API_URL}/restaurant`, {
+  const getRestaurantData = () => {
+   fetch(`${Mongo_API_URL}/restaurant`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json',
                   'Accept': 'application/json',
-                   Email: localStorage.getItem('Email')
+                   'email': localStorage.getItem('Email')
       },
     }).then(response => response.json())
       .then(data => {
@@ -50,12 +50,14 @@ export default function Restaurant_Management() {
       .then(data => {
         //data= { statusCode: 200, message: 'Restaurant updated successfully.' }
         setalertData(data.message);
+        setwantToEdit(false);
       }).catch(error => {
         setalertData("An error occurred at server side.");
         console.log(error);
       });
   };
-  useEffect(() => { getRestaurantData() }, []);
+  useEffect(() => { getRestaurantData()
+   }, []);
   return (
     <>
       {
@@ -86,7 +88,7 @@ export default function Restaurant_Management() {
         /*For Add a Restaurant button*/
         haveRestaurants === false && (
           <h4 className='btn btn-primary' onClick={() => {
-            wantToShowForm(true);
+            setwantToShowForm(true);
           }}>Add Restaurant Details</h4>
         )
       }

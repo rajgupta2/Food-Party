@@ -42,7 +42,14 @@ export default function Dashboard() {
                         return (
                             <div className="col " key={ind}>
                                 <div className="card shadow">
-                                    <Link to={'/user'+elem.path} className='text-decoration-none dashboard_item'>{elem.name}</Link>
+                                    {
+                                        (elem.name === "Logout") ?
+                                            <Link to="/Home/login" className='text-decoration-none dashboard_item' onClick={() => {
+                                                localStorage.clear();
+                                            }}>{elem.name}</Link>
+                                            :
+                                            <Link to={'/user' + elem.path} className='text-decoration-none dashboard_item'>{elem.name}</Link>
+                                    }
                                 </div>
                             </div>
                         );

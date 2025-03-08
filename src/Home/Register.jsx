@@ -10,7 +10,7 @@ export default function Register() {
       setalertData("Please enter whole details");
       return;
     }
-    const response = await fetch(`${Mongo_API_URL}/user`, {
+    await fetch(`${Mongo_API_URL}/user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(registerData),
@@ -50,7 +50,7 @@ export default function Register() {
               <option value="">User Type</option>
               <option value="restaurant owner">Restaurant Owner</option>
               <option value="user">User</option>
-              <option value="delivery agent">Delivery Agent</option>
+              <option value="delivery agent" disabled>Delivery Agent</option>
             </select>
             <br />
             <input className="form-control" id="Email" type="email" name="email" placeholder="example@gmail.com" value={registerData.Email} onChange={(e) => { setregisterData({ ...registerData, Email: e.target.value }) }} /> <br />

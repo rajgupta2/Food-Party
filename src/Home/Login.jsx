@@ -12,23 +12,25 @@ export default function Login() {
             setalertData("Please enter whole details");
             return;
         }
-        const response = await fetch(`${Mongo_API_URL}/user`, {
+        await fetch(`${Mongo_API_URL}/user/${loginData.Email}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', data: JSON.stringify(loginData) },
         }).then(response => response.json())
             .then(data => {
+                console.log(loginData);
                 //data={ statusCode: 500,isValidate:false, message: err.message (only when error occured) }
                 if (data.isValidate) {
+                    localStorage.setItem("Email",loginData.Email);
+                    localStorage.setItem("Type",loginData.Type);
                     setalertData("You are redirected.");
                     if (loginData.Type === 'user')
                         navigate("/user");
                     else if (loginData.Type === 'restaurant owner')
                         navigate("/vendor");
-                    localStorage.setItem("Email:",loginData.Email);
-                    localStorage.setItem("Type",loginData.Type);
                     setloginData({ Email: '', Password: '', Type: '' });
                 } else if (data.statusCode === 404) {
                     setalertData("No valid credentials.");
+                    console.log(data);
                 }
             }).catch(error => {
                 setalertData("An error occurred at server side.");
@@ -56,7 +58,7 @@ export default function Login() {
                             <option value="">User Type</option>
                             <option value="restaurant owner">Restaurant Owner</option>
                             <option value="user">User</option>
-                            <option value="delivery agent">Delivery Agent</option>
+                            <option value="delivery agent" disabled>Delivery Agent</option>
                         </select>
                         <br />
                         <input className="form-control" id="Email" type="email" name="email" placeholder="example@gmail.com" value={loginData.Email} onChange={(e) => { setloginData({ ...loginData, Email: e.target.value }) }} /> <br />

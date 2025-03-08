@@ -1,6 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import './css/dashboard.css';
+
 
 export default function Dashboard() {
     const vendorRoutes = [
@@ -15,6 +16,10 @@ export default function Dashboard() {
         {
             path: '/create-promotion',
             name: 'Create Promotions',
+        },
+        {
+            path: '/manage-promotions',
+            name: 'Manage Promotions',
         },
         {
             path: '/order-history',
@@ -33,6 +38,7 @@ export default function Dashboard() {
             name: 'Logout',
         },
     ];
+    const navigate = useNavigate();
 
     return (
         <>
@@ -43,7 +49,15 @@ export default function Dashboard() {
                         return (
                             <div className="col " key={ind}>
                                 <div className="card shadow">
-                                    <Link to={'/vendor'+elem.path} className='text-decoration-none dashboard_item'>{elem.name}</Link>
+                                    {
+                                        (elem.name === "Logout") ?
+                                            <Link to="/Home/login" className='text-decoration-none dashboard_item' onClick={()=>{
+                                                localStorage.clear();
+                                            }}>{elem.name}</Link>
+                                            :
+                                            <Link to={'/vendor' + elem.path} className='text-decoration-none dashboard_item'>{elem.name}</Link>
+
+                                    }
                                 </div>
                             </div>
                         );

@@ -1,91 +1,64 @@
-import React from 'react'
-
+import React, { useEffect, useState } from 'react'
+import { Mongo_API_URL } from '../api';
+import { Link } from 'react-router-dom';
 export default function Favorites() {
-  const favoriteItems = [
-    {
-      id: "F101",
-      dishName: "Margherita Pizza",
-      restaurant: "Pizza Palace",
-      price: "₹250",
-      imageUrl: "https://images.unsplash.com/photo-1601924582972-26064e67c9ac?auto=format&fit=crop&w=500&q=60",
-      rating: 4.5,
-      cuisine: "Italian",
-    },
-    {
-      id: "F102",
-      dishName: "Veg Burger",
-      restaurant: "Burger Hub",
-      price: "₹150",
-      imageUrl: "https://images.unsplash.com/photo-1612874743837-b7373bf7b1f6?auto=format&fit=crop&w=500&q=60",
-      rating: 4.2,
-      cuisine: "American",
-    },
-    {
-      id: "F103",
-      dishName: "Pasta Alfredo",
-      restaurant: "Pasta Point",
-      price: "₹300",
-      imageUrl: "https://images.unsplash.com/photo-1601315374519-838d82ab9b0e?auto=format&fit=crop&w=500&q=60",
-      rating: 4.8,
-      cuisine: "Italian",
-    },
-    {
-      id: "F104",
-      dishName: "Chicken Biryani",
-      restaurant: "Biryani House",
-      price: "₹350",
-      imageUrl: "https://images.unsplash.com/photo-1664121707455-71e30af78b24?auto=format&fit=crop&w=500&q=60",
-      rating: 4.7,
-      cuisine: "Indian",
-    },
-    {
-      id: "F104",
-      dishName: "Chicken Biryani",
-      restaurant: "Biryani House",
-      price: "₹350",
-      imageUrl: "https://images.unsplash.com/photo-1664121707455-71e30af78b24?auto=format&fit=crop&w=500&q=60",
-      rating: 4.7,
-      cuisine: "Indian",
-    }, {
-      id: "F104",
-      dishName: "Chicken Biryani",
-      restaurant: "Biryani House",
-      price: "₹350",
-      imageUrl: "https://images.unsplash.com/photo-1664121707455-71e30af78b24?auto=format&fit=crop&w=500&q=60",
-      rating: 4.7,
-      cuisine: "Indian",
-    }, {
-      id: "F104",
-      dishName: "Chicken Biryani",
-      restaurant: "Biryani House",
-      price: "₹350",
-      imageUrl: "https://images.unsplash.com/photo-1664121707455-71e30af78b24?auto=format&fit=crop&w=500&q=60",
-      rating: 4.7,
-      cuisine: "Indian",
-    }, {
-      id: "F104",
-      dishName: "Chicken Biryani",
-      restaurant: "Biryani House",
-      price: "₹350",
-      imageUrl: "https://images.unsplash.com/photo-1664121707455-71e30af78b24?auto=format&fit=crop&w=500&q=60",
-      rating: 4.7,
-      cuisine: "Indian",
-    },
-  ];
+  const [alertData, setalertData] = useState();
+  const [favoriteItems, setFavoriteItems] = useState([]);
+  const fetchfavoriteDish = async () => {
+    fetch(`${Mongo_API_URL}/favorite/${localStorage.getItem('Email')}/all-description`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    }).then(response => response.json())
+      .then(data => {
+        setFavoriteItems(data.favorites);
+      }).catch(error => {
+        setalertData("An error occured, failed to load favorite dish.");
+        console.log(error);
+      });
+  };
+  const removeFromFavorite = async (id) => {
+    await fetch(`${Mongo_API_URL}/favorite/${localStorage.getItem('Email')}/${id}`, {
+      method: 'Delete',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    }).then(response => response.json())
+      .then(data => {
+        if (data.statusCode === 200) {
+          setalertData(data.message);
+          setFavoriteItems((prevItems) => prevItems.filter((item) => item._id !== id));
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    fetchfavoriteDish();
+  }, []);
   return (
     <>
       <h2>Favorite dishes</h2>
+      {
+        alertData && (
+          <div className="alert alert-success alert-dismissible fade show" role="alert">
+            <b>{alertData}</b>
+            <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close" onClick={()=>{
+              setalertData();
+            }}></button>
+          </div>
+        )
+      }
       <div className="row row-cols-1 row-cols-md-4 g-4">
         {
           favoriteItems.map((elem, ind) => {
             return (
               <div className="col" key={ind}>
                 <div className="card shadow">
-                  <img className="card-img-top" src="/image.png" alt={elem.dishName} />
+                  <img className="card-img-top" src="/image.png" alt={elem._MenuItem.Name} />
                   <div className="row m-2">
-                    <div className="col">{elem.dishName}</div>
-                    <div className="col text-end">{elem.price}</div>
-                    <p className="card-text  ml-2">Rating: {elem.rating}</p>
+                    <div className="col h5">{elem._MenuItem.Name}</div>
+                    <div className="col text-end">Price: &#8377;{elem._MenuItem.Price}</div>
+                    <p className="mb-0"><b>Restaurant: {elem._MenuItem._Restaurant.Name}</b></p>
+                    <p className="mb-0">{elem._MenuItem.Description}</p>
+                    <Link to=""  className="btn btn-primary btn-small" onClick={() => { removeFromFavorite(elem._id) }}>Remove</Link>
                   </div>
                 </div>
               </div>

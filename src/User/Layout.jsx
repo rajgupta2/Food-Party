@@ -9,7 +9,7 @@ export default function Layout() {
     <>
       <div className="container-fluid">
         <User_Navbar />
-        <div className="container" style={{marginBottom:'47px'}}>
+        <div className="container mb-5"  style={{}}>
           <Outlet />
         </div>
         <Footer />
