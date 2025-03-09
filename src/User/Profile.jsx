@@ -20,7 +20,7 @@ export default function Profile() {
     }).then(response => response.json())
       .then(data => {
         //data={ statusCode: 200, data:user }
-        if(data.statusCode===200){
+        if(data.statusCode===200 && data.data){
           setprofile({ ...profile, Name: data.data.Name, Phone: data.data.Phone });
           sethaveEntityAlready(true);
         }
@@ -50,7 +50,6 @@ export default function Profile() {
       body: JSON.stringify(profile),
     }).then(response => response.json())
       .then(data => {
-        console.log(data);
         setalertData(data.message);
       }).catch(error => {
         setalertData("An error occurred at server side.");

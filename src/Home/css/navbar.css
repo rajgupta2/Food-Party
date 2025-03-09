@@ -2,9 +2,19 @@
     font-size: large;
     color: blue !important;
 }
+
 @media screen and (min-width:990px) {
     .navbarList{
         position:absolute;
         right:125px;
     }
+    .footer{
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+}
+@media screen and (max-width:800px) {
+
 }

@@ -25,6 +25,7 @@ export default function Earnings() {
   return (
     <>
       <h4>Sales & Earnings Overview</h4>
+      <p className='text-danger'>This is the demo of sales and earning page. We are working on it and will be soon updated to show your sales and earnings.</p>
       <div className="row">
         <div className="col">
           <p className='mb-0'><b>Total Sales:</b> {totalSales}</p>

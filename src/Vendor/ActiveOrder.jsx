@@ -1,53 +1,43 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Mongo_API_URL } from '../api';
 
 
 export default function Order_History() {
-    const vendorOrderHistory = [
-        {
-            orderId: 'ORD12345',
-            customerName: 'Amit Sharma',
-            contactInfo: '9876543210',
-            deliveryAddress: '123 Main St, New Delhi',
-            items: [
-                { name: 'Margherita Pizza', quantity: 2, price: 250 },
-                { name: 'Caesar Salad', quantity: 1, price: 150 }
-            ],
-            status: 'Pending',
-            orderDate: '2025-02-20 14:30',
-            totalAmount: 650,
-            isAccepted: true,
-        },
-        {
-            orderId: 'ORD12346',
-            customerName: 'Sneha Patel',
-            contactInfo: '8765432109',
-            deliveryAddress: '456 Oak St, Mumbai',
-            items: [
-                { name: 'Pasta Alfredo', quantity: 1, price: 200 },
-                { name: 'Garlic Bread', quantity: 2, price: 100 }
-            ],
-            status: 'Preparing',
-            orderDate: '2025-02-21 10:00',
-            totalAmount: 400,
-            isAccepted:false
-        },
-        {
-            orderId: 'ORD12347',
-            customerName: 'Rahul Verma',
-            contactInfo: '7654321098',
-            deliveryAddress: '789 Pine St, Kolkata',
-            items: [
-                { name: 'Burger Combo', quantity: 1, price: 180 },
-                { name: 'Coke', quantity: 2, price: 50 }
-            ],
-            status: 'Cancelled',
-            orderDate: '2025-02-22 13:45',
-            totalAmount: 280,
-            isAccepted: true,
-        }
-    ];
+    const [ordersArray, setOrdersArray] = useState([]);
+    const [alertData, setalertData] = useState();
+    const getOrder = async () => {
+        await fetch(`${Mongo_API_URL}/order/active-order/${localStorage.getItem('Email')}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        }).then(response => response.json())
+            .then(data => {
+                setOrdersArray(data.orders);
+            }).catch(error => {
+                setalertData("An error occured, failed to load cart items.");
+                console.log(error);
+            });
+    }
+    const updateOrder = async (id, status) => {
+        await fetch(`${Mongo_API_URL}/order/update-order/${id}/${status}`, {
+            method: 'get',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        }).then(response => response.json())
+            .then(data => {
+                setOrdersArray(prevOrders =>
+                    prevOrders.map(elem =>
+                        elem._id === id ? { ...elem, Status: status } : elem
+                    )
+                );
+            }).catch(error => {
+                setalertData("An error occured, failed to load cart items.");
+                console.log(error);
+            });
+    }
+    useEffect(() => {
+        getOrder();
+    }, []);
     return (
         <>
             <h4>Active Order Dashboard</h4>
@@ -56,9 +46,8 @@ export default function Order_History() {
                     <thead>
                         <tr className='bg-secondary'>
                             <th>Order ID</th>
-                            <th>Customer Name</th>
+                            <th>Customer</th>
                             <th>Delivery Address</th>
-                            <th>Order Time</th>
                             <th>Items</th>
                             <th>Total-Amount</th>
                             <th>Status</th>
@@ -67,31 +56,53 @@ export default function Order_History() {
                     </thead>
                     <tbody>
                         {
-                            vendorOrderHistory.map((elem, ind) => {
+                            ordersArray.map((elem, ind) => {
+                                const totalAmount = elem.Items.reduce((sum, item) => sum + (item.Quantity * (item.item?.Price || 0)), 0);
                                 return (
                                     <tr key={ind}>
-                                        <td>{elem.orderId}</td>
-                                        <td>{elem.customerName}</td>
-                                        <td>{elem.deliveryAddress}</td>
-                                        <td>{elem.orderDate}</td>
+                                        <td>{elem._id}</td>
+                                        <td>
+                                            <p className='mb-0'><b>{elem.Customer.Name}</b> </p>
+                                            <p className='mb-0'>Contact:{elem.Customer.Phone}</p>
+                                        </td>
+                                        <td>
+                                            <p className='mb-0'> {elem.DeliveryAddress.Name},</p>
+                                            <p className='mb-0'>  {elem.DeliveryAddress.Street}, {elem.DeliveryAddress.City},</p>
+                                            <p className='mb-0'>{elem.DeliveryAddress.PinCode} </p>
+                                        </td>
                                         <td>
                                             {
-                                                elem.items.map((item,key) =>{
-                                                    return <p  className="mb-0" key={key}>{item.quantity}-{item.name}</p>
+                                                elem.Items.map((elem, ind) => {
+                                                    return <p className='mb-0' key={ind}>{elem.Quantity} {elem.item.Name}</p>
                                                 })
                                             }
                                         </td>
-                                        <td className='text-center'>{elem.totalAmount}</td>
-                                        <td className={(elem.status==='Delivered')?'text-success':(elem.status=='Cancelled')?'text-danger':'text-warning'}>{elem.status}</td>
+                                        <td>&#8377; {parseInt(totalAmount)}</td>
+                                        <td className={
+                                            elem.Status === 'Delivered'
+                                            ? "text-success"
+                                            : elem.Status === 'Cancelled'
+                                              ? "text-danger"
+                                              : "text-warning"
+                                        }>{elem.Status}</td>
                                         <td className='text-center'>
                                             {
-                                                elem.isAccepted===false && (
-                                                    <Link className=' text-primary text-decoration-none p-2' >Accept</Link>
+                                                elem.Status === 'Pending' && (
+                                                    <>
+                                                        <Link className='p-2 btn btn-primary btn-sm' onClick={() => {
+                                                            updateOrder(elem._id, 'Accept');
+                                                        }}>Accept</Link> &nbsp;
+                                                        <Link className='p-2 btn btn-danger btn-sm' onClick={() => {
+                                                            updateOrder(elem._id, 'Cancelled');
+                                                        }}>Cancel</Link>
+                                                    </>
                                                 )
                                             }
                                             {
-                                                elem.isAccepted===true && (
-                                                    <Link className=' text-primary text-decoration-none p-2 ' >Mark as Ready</Link>
+                                                elem.Status === "Accept" && (
+                                                    <Link className='btn btn-success btn-sm p-2 ' onClick={() => {
+                                                        updateOrder(elem._id, 'Ready');
+                                                    }}>Mark as Ready</Link>
                                                 )
                                             }
                                         </td>

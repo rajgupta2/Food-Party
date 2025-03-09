@@ -38,12 +38,12 @@ export const Carousals = () => {
             })
           }
         </div>
-        <button className="carousel-control-prev text-success" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+        <button className="carousel-control-prev " type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+          <span className="btn btn-outline-primary btn-sm" aria-hidden="true">&lt;</span>
           <span className="visually-hidden">Previous</span>
         </button>
         <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-          <span className="carousel-control-next-icon" aria-hidden="true"></span>
+          <span className="btn btn-outline-primary btn-sm" aria-hidden="true">&gt;</span>
           <span className="visually-hidden">Next</span>
         </button>
       </div>

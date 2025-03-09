@@ -73,6 +73,39 @@ export default function Cart() {
         console.log(error);
       });
   };
+
+  const placeOrder = async () => {
+    const customerEmail = localStorage.getItem('Email');
+    const deliveryAddress = deliveryAddressId;
+    const paymentMethod = paymentOption;
+
+    if (!deliveryAddress || !paymentMethod) {
+      setalertData("Please provide a delivery address and select a payment method.");
+      return;
+    }
+
+    const orderData = {
+      customerEmail,
+      deliveryAddress,
+      paymentMethod,
+      cartItems
+    };
+
+    await fetch(`${Mongo_API_URL}/order/place-order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(orderData)
+    }).then(response => response.json())
+      .then(data => {
+        setalertData(data.message);
+        setCartItems([]); // Clear cart after order
+        setTotalAmount(0);
+      })
+      .catch(error => {
+        setalertData("An error occurred while placing the order.");
+        console.log(error);
+      });
+  };
   useEffect(() => {
     getCart();
     getAddress();
@@ -143,9 +176,7 @@ export default function Cart() {
             <option value="Credit/Debit Card" disabled className='bg-muted'>Credit/Debit Card</option>
             <option value="UPI Payments" disabled >UPI Payments</option>
           </select>
-          <button className="btn btn-primary" onClick={()=>{
-
-          }}>Place Order</button>
+          <button className="btn btn-primary" onClick={placeOrder}>Place Order</button>
         </div>
       </div>
     </>

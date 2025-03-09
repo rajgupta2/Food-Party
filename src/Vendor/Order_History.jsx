@@ -1,160 +1,74 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Mongo_API_URL } from '../api';
 
 
 export default function Order_History() {
-    const [useSpecifiedOrder, setSpecifiedOrder] = useState();
-    const [useShowDetails, setShowDetails] = useState('hidden');
-    const vendorOrderHistory = [
-        {
-            orderId: 'ORD12345',
-            customerName: 'Amit Sharma',
-            contactInfo: '9876543210',
-            deliveryAddress: '123 Main St, New Delhi',
-            items: [
-                { name: 'Margherita Pizza', quantity: 2, price: 250 },
-                { name: 'Caesar Salad', quantity: 1, price: 150 }
-            ],
-            status: 'Delivered',
-            orderDate: '2025-02-20 14:30',
-            deliveryDate: '2025-02-20 15:15',
-            paymentMethod: 'UPI',
-            paymentStatus: 'Paid',
-            totalAmount: 650
-        },
-        {
-            orderId: 'ORD12346',
-            customerName: 'Sneha Patel',
-            contactInfo: '8765432109',
-            deliveryAddress: '456 Oak St, Mumbai',
-            items: [
-                { name: 'Pasta Alfredo', quantity: 1, price: 200 },
-                { name: 'Garlic Bread', quantity: 2, price: 100 }
-            ],
-            status: 'Preparing',
-            orderDate: '2025-02-21 10:00',
-            deliveryDate: null,
-            paymentMethod: 'Cash',
-            paymentStatus: 'Pending',
-            totalAmount: 400
-        },
-        {
-            orderId: 'ORD12347',
-            customerName: 'Rahul Verma',
-            contactInfo: '7654321098',
-            deliveryAddress: '789 Pine St, Kolkata',
-            items: [
-                { name: 'Burger Combo', quantity: 1, price: 180 },
-                { name: 'Coke', quantity: 2, price: 50 }
-            ],
-            status: 'Cancelled',
-            orderDate: '2025-02-22 13:45',
-            paymentMethod: 'Card',
-            paymentStatus: 'Refunded',
-            totalAmount: 280
-        }
-    ];
-
-    const ViewDetails = ({ order}) => {
-        return (
-            <>
-                {
-                    order !== undefined && (
-                        <>
-                            <Link className='text-primary p-1 text-decoration-none' onClick={()=>{setShowDetails('hidden')}}>Back</Link>
-                            <table className='table' style={{ maxWidth: '500px' }}>
-                                <tbody>
-                                    <tr>
-                                        <td>Order-Id:</td>
-                                        <td>{order.orderId}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Customer Name:</td>
-                                        <td>{order.customerName}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Contact No.</td>
-                                        <td>{order.contactInfo}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Delivery Address:</td>
-                                        <td>{order.deliveryAddress}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Dish Items:</td>
+    const [ordersArray, setOrdersArray] = useState([]);
+    const [alertData, setalertData] = useState();
+    const getOrder = async () => {
+        await fetch(`${Mongo_API_URL}/order/order-history/${localStorage.getItem('Email')}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        }).then(response => response.json())
+            .then(data => {
+                setOrdersArray(data.orders);
+            }).catch(error => {
+                setalertData("An error occured, failed to load cart items.");
+                console.log(error);
+            });
+    }
+    useEffect(() => {
+        getOrder();
+    }, []);
+    return (
+        <>
+            <h4>Order History</h4>
+            <div className='table-responsive'>
+                <table className='table table-hover border'>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Delivery Address</th>
+                            <th>Items</th>
+                            <th>Total-Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            ordersArray.map((elem, ind) => {
+                                const totalAmount = elem.Items.reduce((sum, item) => sum + (item.Quantity * (item.item?.Price || 0)), 0);
+                                return (
+                                    <tr key={ind}>
+                                        <td>{elem._id}</td>
+                                        <td>
+                                            <p className='mb-0'><b>{elem.Customer.Name}</b> </p>
+                                            <p className='mb-0'>Contact:{elem.Customer.Phone}</p>
+                                        </td>
+                                        <td>
+                                            <p className='mb-0'> {elem.DeliveryAddress.Name},</p>
+                                            <p className='mb-0'>  {elem.DeliveryAddress.Street}, {elem.DeliveryAddress.City},</p>
+                                            <p className='mb-0'>{elem.DeliveryAddress.PinCode} </p>
+                                        </td>
                                         <td>
                                             {
-                                                order.items.map((elem, ind) => {
-                                                    return <p key={ind}>{elem.name} with quantity- {elem.quantity} having price: {elem.price}</p>
+                                                elem.Items.map((elem, ind) => {
+                                                    return <p className='mb-0' key={ind}>{elem.Quantity} {elem.item.Name}</p>
                                                 })
                                             }
                                         </td>
+                                        <td>&#8377; {parseInt(totalAmount)}</td>
+                                        <td className={elem.Status === 'Delivered' ? "text-success" : "text-warning"}>{elem.Status}</td>
                                     </tr>
-                                    <tr>
-                                        <td>Total Amount:</td>
-                                        <td>{order.totalAmount}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </>
-                    )
-                }
-            </>
-        )
-    };
-
-    return (
-        <>
-            <h4>Order History Dashboard</h4>
-            {
-                useShowDetails === 'hidden' && (
-                    <div className='table-responsive'>
-                        <table className='table table-hover'>
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Customer Name</th>
-                                    <th>Delivery Address</th>
-                                    <th>Order date</th>
-                                    <th>Total-Amount</th>
-                                    <th>Delivery-Status</th>
-                                    <th>Payment-Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    vendorOrderHistory.map((elem, ind) => {
-                                        return (
-                                            <tr key={ind}>
-                                                <td>{elem.orderId}</td>
-                                                <td>{elem.customerName}</td>
-                                                <td>{elem.deliveryAddress}</td>
-                                                <td>{elem.orderDate}</td>
-                                                <td>{elem.totalAmount}</td>
-                                                <td>{elem.status}</td>
-                                                <td>{elem.paymentStatus}</td>
-                                                <td>
-                                                    <Link className=' text-primary text-decoration-none' onClick={() => { setShowDetails('visible'); setSpecifiedOrder(elem); }}>
-                                                        View Details
-                                                    </Link>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                )
-            }
-
-            {
-                useShowDetails === 'visible' && (
-                    <ViewDetails order={useSpecifiedOrder} />
-                )
-            }
+                                )
+                            })
+                        }
+                    </tbody>
+                </table>
+            </div>
         </>
     )
 }
